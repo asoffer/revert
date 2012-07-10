@@ -13,4 +13,5 @@ class Touchable(Thing):
         self.setRevertable(False)
 
         self.geom = geom
+        self.geom.setPosition(loc)
         self.geom.setCollideBits(BitMask32(0x00000001))

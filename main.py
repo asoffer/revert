@@ -2,10 +2,7 @@ from direct.showbase.ShowBase import ShowBase
 from pandac.PandaModules import Point3, WindowProperties
 
 from app.lib.world import World 
-from app.objects.ball import Ball
-from app.objects.block import Block
-from app.objects.platform import Platform
-from app.objects.player import Player
+from app.lib.levelBuilder import LevelBuilder
 from app.masters.cameraMaster import CameraMaster
 
 class Game(ShowBase, CameraMaster):
@@ -16,6 +13,7 @@ class Game(ShowBase, CameraMaster):
         self.setWindowName("Revert")
         self.setBackgroundColor(0.5,0.5,0.5)
 
+        self.levelBuilder = LevelBuilder(self)
 
         #key listening
         self.accept('s',lambda: messenger.send("save"))
@@ -27,25 +25,19 @@ class Game(ShowBase, CameraMaster):
         self.accept('arrow_up', lambda: messenger.send("player_jump"))
 
 
-        #make a world
-        self.world = World(self)
-
-        self.cameraStalkee = self.world.player
-
     def setWindowName(self, name):
         props = WindowProperties()
         props.setTitle(name)
         base.win.requestProperties(props)
 
+    def build(self, lvlString):
+        self.world = self.levelBuilder.build(lvlString)
+
 APP = Game()
-p = Platform(APP.world, Point3(0,0,0))
-APP.world.add(p)
 
-APP.taskMgr.add(APP.world.step, "physics")
-#b = Block(APP.world, Point3(-5,30,0))
-#APP.world.add(b)
+APP.build("test")
 
-b2 = Ball(APP.world, Point3(-5,20,0))
-APP.world.add(b2)
+APP.taskMgr.doMethodLater(0.1, APP.world.step, "physics")
 
 APP.run()
+

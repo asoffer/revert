@@ -11,7 +11,7 @@ class Platform(Touchable):
 
         self.width = 20
 
-        super(Platform, self).__init__(world, OdeBoxGeom(world.space, self.width, 0.4, 2), "platform", loc)
+        super(Platform, self).__init__(world, OdeBoxGeom(world.space, self.width, 0.2, 1), "platform", loc)
 
-        self.model.setScale(self.width/2, 0.2, 1)
+        self.model.setScale(self.width/2, 1, 1)
 

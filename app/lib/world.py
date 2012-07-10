@@ -1,5 +1,5 @@
 from pandac.PandaModules import Fog, Point3, VBase4, AmbientLight
-from panda3d.ode import OdeWorld, OdeSimpleSpace, OdeJointGroup, OdePlane2dJoint
+from panda3d.ode import OdeWorld, OdeSimpleSpace, OdeJointGroup
 from panda3d.core import Quat
 
 from ..objects.player import Player
@@ -44,9 +44,6 @@ class World(object):
         self.contactGroup = OdeJointGroup()
         self.space.setAutoCollideJointGroup(self.contactGroup)
 
-        #constrain to 2d
-        self.plane = OdePlane2dJoint(self.world)
-
         self.timeAccumulator = 0
         self.dt = 1.0 / 60.0
 
@@ -67,8 +64,6 @@ class World(object):
         obj.model.reparentTo(self.renderer)
         if isinstance(obj, Physical):
             self.things += [obj]
-            self.plane.attach(obj.body, None)
-
 
     def step(self, task):
         self.timeAccumulator += globalClock.getDt()
@@ -80,7 +75,7 @@ class World(object):
             self.contactGroup.empty()
 
         for x in self.things:
-            x.constrainQuat()
+            x.constrainPosQuat()
             x.model.setPosQuat(self.renderer, x.body.getPosition(), Quat(x.body.getQuaternion()))
 
         return task.cont

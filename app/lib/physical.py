@@ -32,13 +32,15 @@ class Physical(Touchable):
 
         self.rot = rot
 
-    def constrainQuat(self):
+    def constrainPosQuat(self):
         """keep the object rotating in the correct plane"""
 
         #FIXME is there a better way than fixing at every instant?
+        self.body.setPosition(self.body.getPosition()[0], self.body.getPosition()[1], 0)
+
         if not self.rot:
             self.body.setQuaternion(Quat.identQuat())
-        return
+            return
 
         q = self.body.getQuaternion()
         q[1] = 0

@@ -1,0 +1,9 @@
+<level>
+    <platform x="0" y="0" />
+    <platform x="10" y="5" />
+    <platform x="30" y="0" />
+    <platform x="60" y="5" />
+ 
+    <block x="3" y="3" />
+    <ball x="-3" y="5" />
+</level>
