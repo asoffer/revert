@@ -8,10 +8,9 @@ from .thing import Thing
 from .physical import Physical
 from .touchable import Touchable
 
-class World(Thing):
+class World(object):
     def __init__(self, game):
-        super(World, self).__init__("empty")
-        #FIXME this shouldn't have a position, need to make a class that is above thing... a "visual," or something.
+        super(World, self).__init__()
 
         self.game = game
 
