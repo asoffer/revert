@@ -25,7 +25,7 @@ class LevelBuilder(object):
         elif name == "block":
             thing = Block(self.world, loc = pointFromAttrs(attrs))
         elif name == "platform":
-            thing = Platform(self.world, loc = pointFromAttrs(attrs))
+            thing = Platform(self.world, float(attrs["width"]), float(attrs["rot"]), loc = pointFromAttrs(attrs))
         else:
             return
 

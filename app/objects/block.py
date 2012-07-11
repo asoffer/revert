@@ -9,8 +9,8 @@ class Block(Physical):
         """
 
         mass = OdeMass()
-        mass.setBox(1000, 2, 2, 2)
+        mass.setBox(500, 2, 2, 2)
 
         geom = OdeBoxGeom(world.space, 2, 2, 2)
 
-        super(Block, self).__init__(world, mass, geom, "block", loc, False)
+        super(Block, self).__init__(world, mass, geom, "block", loc)

@@ -42,7 +42,8 @@ class Player(Physical):
         else:
             self.direction = 0
 
-        self.body.setLinearVel(self.direction * self.speed, self.body.getLinearVel().getY(), 0)
+        if self.body.getLinearVel()[0] * self.direction < 20:
+            self.body.addRelForce(VBase3(1000000*self.direction, 0,0))#setLinearVel(self.direction * self.speed, self.body.getLinearVel().getY(), 0)
 
         return task.cont
 
