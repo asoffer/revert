@@ -5,8 +5,8 @@
       <author>Blender User</author>
       <authoring_tool>Blender 2.57.0 r36147M</authoring_tool>
     </contributor>
-    <created>2012-07-10T16:29:53</created>
-    <modified>2012-07-10T16:29:53</modified>
+    <created>2012-07-11T16:42:31</created>
+    <modified>2012-07-11T16:42:31</modified>
     <unit name="meter" meter="1"/>
     <up_axis>Z_UP</up_axis>
   </asset>
@@ -96,7 +96,7 @@
     </light>
   </library_lights>
   <library_effects>
-    <effect id="Material-effect">
+    <effect id="Material_001-effect">
       <profile_COMMON>
         <technique sid="common">
           <phong>
@@ -107,7 +107,7 @@
               <color>0 0 0 1</color>
             </ambient>
             <diffuse>
-              <color>0.64 0.64 0.64 1</color>
+              <color>0.5784239 0.1355192 0.1872008 1</color>
             </diffuse>
             <specular>
               <color>0.5 0.5 0.5 1</color>
@@ -130,8 +130,8 @@
     </effect>
   </library_effects>
   <library_materials>
-    <material id="Material-material" name="Material">
-      <instance_effect url="#Material-effect"/>
+    <material id="Material_001-material" name="Material.001">
+      <instance_effect url="#Material_001-effect"/>
     </material>
   </library_materials>
   <library_geometries>
@@ -160,7 +160,7 @@
         <vertices id="Cube-mesh-vertices">
           <input semantic="POSITION" source="#Cube-mesh-positions"/>
         </vertices>
-        <polylist material="Material1" count="6">
+        <polylist material="Material_0011" count="6">
           <input semantic="VERTEX" source="#Cube-mesh-vertices" offset="0"/>
           <input semantic="NORMAL" source="#Cube-mesh-normals" offset="1"/>
           <vcount>4 4 4 4 4 4 </vcount>
@@ -181,7 +181,7 @@
         <instance_geometry url="#Cube-mesh">
           <bind_material>
             <technique_common>
-              <instance_material symbol="Material1" target="#Material-material"/>
+              <instance_material symbol="Material_0011" target="#Material_001-material"/>
             </technique_common>
           </bind_material>
         </instance_geometry>

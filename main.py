@@ -11,7 +11,6 @@ class Game(ShowBase, CameraMaster):
         CameraMaster.__init__(self)
 
         self.setWindowName("Revert")
-        self.setBackgroundColor(0.5,0.5,0.5)
 
         self.levelBuilder = LevelBuilder(self)
 
@@ -36,6 +35,7 @@ class Game(ShowBase, CameraMaster):
 APP = Game()
 
 APP.build("test")
+APP.world.init()
 
 APP.taskMgr.doMethodLater(0.1, APP.world.step, "physics")
 

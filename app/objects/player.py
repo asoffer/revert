@@ -20,7 +20,7 @@ class Player(Physical):
         self.key = {"left": False, "right": False}
 
         self.direction = 0
-        self.speed = 13
+        self.speed = 10
 
         self.accept("player_left_down", self.setKey, ["left", True])
         self.accept("player_left_up", self.setKey, ["left", False])
@@ -33,8 +33,6 @@ class Player(Physical):
         self.key[k] = v
 
     def move(self, task):
-        #v = self.body.getLinearVel() - VBase3(10 * self.direction, 0, 0)
-
         if self.key["left"] and not self.key["right"]:
             self.direction = -1
         elif self.key["right"] and not self.key["left"]:
@@ -43,7 +41,7 @@ class Player(Physical):
             self.direction = 0
 
         if self.body.getLinearVel()[0] * self.direction < 20:
-            self.body.addRelForce(VBase3(1000000*self.direction, 0,0))#setLinearVel(self.direction * self.speed, self.body.getLinearVel().getY(), 0)
+            self.body.addRelForce(VBase3(10000000*self.direction, 0,0))#setLinearVel(self.direction * self.speed, self.body.getLinearVel().getY(), 0)
 
         return task.cont
 

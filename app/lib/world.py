@@ -1,4 +1,4 @@
-from pandac.PandaModules import Fog, Point3, VBase4, AmbientLight
+from pandac.PandaModules import Fog, Point3, VBase4, DirectionalLight, PointLight
 from panda3d.ode import OdeWorld, OdeSimpleSpace, OdeJointGroup
 from panda3d.core import Quat
 
@@ -13,25 +13,12 @@ class World(object):
         super(World, self).__init__()
 
         self.game = game
-
-
         self.things = []
-
 
         #initialize the rendering
         self.renderer = self.game.render
-        self.initFog()
-
-        #FIXME do better lighting
-        alight = AmbientLight('alight')
-        alight.setColor(VBase4(0.2, 0.2, 0.2, 1))
-        alnp = self.renderer.attachNewNode(alight)
-        self.renderer.setLight(alnp)
-
-        #initialize a hud
-        self.hud = HUD()
-        self.add(self.hud)
-
+        self.fog = Fog("world fog")
+        
         #physics
         self.world = OdeWorld()
         self.world.setGravity(0,  -20, 0) #FIXME (0,-9.81) would be realistic physics
@@ -52,13 +39,28 @@ class World(object):
         self.add(self.player)
         self.game.taskMgr.add(self.player.move, "movePlayer")
 
-    def initFog(self):
-        f = Fog("World Fog")
-        f.setColor(0.5,0.5,0.5)
-        f.setLinearOnsetPoint(0,0,0)
-        f.setLinearOpaquePoint(0,0,-Thing.REVERTS_VISIBLE * 3)#THING_REVERT_DISTANCE)
-        self.renderer.attachNewNode(f)
-        self.renderer.setFog(f)
+    def setBackgroundColor(self, bg):
+        self.game.setBackgroundColor(bg)
+
+    def init(self):
+        self.fog.setColor(self.game.getBackgroundColor())
+        self.fog.setLinearOnsetPoint(0,0,0)
+        self.fog.setLinearOpaquePoint(0,0,-Thing.REVERTS_VISIBLE * 3)#THING_REVERT_DISTANCE)
+        self.renderer.attachNewNode(self.fog)
+        self.renderer.setFog(self.fog)
+
+        #initialize a hud
+        self.hud = HUD()
+        self.add(self.hud)
+
+        self.lights = [DirectionalLight('l1'), DirectionalLight('l2')]
+        for i in range(len(self.lights)):
+            self.lights[i].setColor(VBase4(0.7, 0.7, 0.7, 1))
+            n = self.renderer.attachNewNode(self.lights[i])
+            n.setHpr(40 * i - 20, -120, 0)
+            self.renderer.setLight(n)
+
+
 
     def add(self, obj):
         obj.model.reparentTo(self.renderer)

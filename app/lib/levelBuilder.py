@@ -1,4 +1,4 @@
-from pandac.PandaModules import Point3
+from pandac.PandaModules import Point3, VBase3
 
 import xml.parsers.expat as expat
 from ..objects.ball import Ball
@@ -12,6 +12,9 @@ class LevelBuilder(object):
         self.game = game
         self.world = None
 
+        #default background color is the bland gray
+        self.bg = VBase3(0.5,0.5,0.5)
+
         self.parser = expat.ParserCreate()
         self.parser.StartElementHandler = self.startElement
         self.parser.CharacterDataHandler = self.characterData
@@ -20,7 +23,10 @@ class LevelBuilder(object):
     def startElement(self, name, attrs):
         thing = None
 
-        if name == "ball":
+        if name == "background":
+            self.bg = VBase3(float(attrs['r']), float(attrs['g']), float(attrs['b']))
+            return
+        elif name == "ball":
             thing = Ball(self.world, loc = pointFromAttrs(attrs))
         elif name == "block":
             thing = Block(self.world, loc = pointFromAttrs(attrs))
@@ -46,6 +52,7 @@ class LevelBuilder(object):
         xmlFile.close()
 
         self.game.cameraStalkee = self.world.player
+        self.world.setBackgroundColor(self.bg)
 
         return self.world
 

@@ -3,10 +3,10 @@
 <Comment> {
   "dae2egg platform.dae platform.egg"
 }
-<Material> Material1 {
-  <Scalar> diffr { 0.64 }
-  <Scalar> diffg { 0.64 }
-  <Scalar> diffb { 0.64 }
+<Material> Material_0011 {
+  <Scalar> diffr { 0.578424 }
+  <Scalar> diffg { 0.135519 }
+  <Scalar> diffb { 0.187201 }
   <Scalar> ambr { 0 }
   <Scalar> ambg { 0 }
   <Scalar> ambb { 0 }
@@ -127,32 +127,32 @@
       }
     }
     <Polygon> {
-      <MRef> { Material1 }
+      <MRef> { Material_0011 }
       <BFace> { 1 }
       <VertexRef> { 0 1 2 3 <Ref> { Cube-mesh } }
     }
     <Polygon> {
-      <MRef> { Material1 }
+      <MRef> { Material_0011 }
       <BFace> { 1 }
       <VertexRef> { 4 5 6 7 <Ref> { Cube-mesh } }
     }
     <Polygon> {
-      <MRef> { Material1 }
+      <MRef> { Material_0011 }
       <BFace> { 1 }
       <VertexRef> { 8 9 10 11 <Ref> { Cube-mesh } }
     }
     <Polygon> {
-      <MRef> { Material1 }
+      <MRef> { Material_0011 }
       <BFace> { 1 }
       <VertexRef> { 12 13 14 15 <Ref> { Cube-mesh } }
     }
     <Polygon> {
-      <MRef> { Material1 }
+      <MRef> { Material_0011 }
       <BFace> { 1 }
       <VertexRef> { 16 17 18 19 <Ref> { Cube-mesh } }
     }
     <Polygon> {
-      <MRef> { Material1 }
+      <MRef> { Material_0011 }
       <BFace> { 1 }
       <VertexRef> { 20 21 22 23 <Ref> { Cube-mesh } }
     }
