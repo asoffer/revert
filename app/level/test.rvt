@@ -5,6 +5,9 @@
     <platform x="10" y="5" width = "10" rot = "90"/>
     <platform x="30" y="0" width = "10" rot = "0"/>
     <platform x="60" y="5" width = "10" rot = "0"/>
+    
+    
+    <key x="5" y="5" />
  
     <block x="3" y="3" />
     <ball x="-3" y="5" />

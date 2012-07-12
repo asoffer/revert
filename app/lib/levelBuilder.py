@@ -4,6 +4,8 @@ import xml.parsers.expat as expat
 from ..objects.ball import Ball
 from ..objects.block import Block
 from ..objects.platform import Platform
+from ..objects.key import Key
+
 from world import World
 
 class LevelBuilder(object):
@@ -32,6 +34,8 @@ class LevelBuilder(object):
             thing = Block(self.world, loc = pointFromAttrs(attrs))
         elif name == "platform":
             thing = Platform(self.world, float(attrs["width"]), float(attrs["rot"]), loc = pointFromAttrs(attrs))
+        elif name == "key":
+            thing = Key(loc = pointFromAttrs(attrs))
         else:
             return
 
