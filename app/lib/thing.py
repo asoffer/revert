@@ -12,9 +12,10 @@ class Thing(object, DirectObject.DirectObject):
 
     REVERTS_VISIBLE = 8
 
-    def __init__(self, model, loc = Point3()):
+    def __init__(self, game, model, loc = Point3(), revert = True):
         super(Thing, self).__init__()
         DirectObject.DirectObject.__init__(self)
+
 
         global THING_ID
         THING_ID += 1
@@ -23,13 +24,19 @@ class Thing(object, DirectObject.DirectObject):
         self.uid = THING_ID
         self.usid = "Thing" + str(self.uid)
 
+        self.game = game
+
         self.stack = []
-        self.revertable = True
+        self.revertable = revert
 
         #load the model
         self.modelPath = 'app/media/models/%s/%s.egg' % (model, model)
         self.model = base.loader.loadModel(self.modelPath)
         self.model.setPos(loc)
+        if self.revertable:
+            self.model.setTexture(self.game.noGlowTextureStage, self.game.noGlow)
+        else:
+            self.model.setTexture(self.game.glowTextureStage, self.game.glow)
 
         #list of what to save and what to revert
         self.toRevert = {'model': self.setModel, 'location': self.setPos}
@@ -53,13 +60,6 @@ class Thing(object, DirectObject.DirectObject):
     def getPos(self):
         return self.model.getPos()
 
-    def setRevertable(self, b):
-        """
-        b is a boolean which determines whether or not an object reverts
-        """
-
-        self.revertable = b
-
     def save(self):
         """
         push state onto the stack
@@ -67,6 +67,7 @@ class Thing(object, DirectObject.DirectObject):
 
         if not self.revertable:
             return
+
 
         state = {}
         for x in self.toSave:

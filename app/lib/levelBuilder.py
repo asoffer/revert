@@ -25,17 +25,21 @@ class LevelBuilder(object):
     def startElement(self, name, attrs):
         thing = None
 
+        rev = not ("revert" in attrs and attrs["revert"] == "off")
+
         if name == "background":
             self.bg = VBase3(float(attrs['r']), float(attrs['g']), float(attrs['b']))
             return
         elif name == "ball":
-            thing = Ball(self.world, loc = pointFromAttrs(attrs))
+            thing = Ball(self.game, loc = pointFromAttrs(attrs), revert = rev)
         elif name == "block":
-            thing = Block(self.world, loc = pointFromAttrs(attrs))
+            thing = Block(self.game, loc = pointFromAttrs(attrs), revert = rev)
+
         elif name == "platform":
-            thing = Platform(self.world, float(attrs["width"]), float(attrs["rot"]), loc = pointFromAttrs(attrs))
+            thing = Platform(self.game, float(attrs["width"]), float(attrs["rot"]), loc = pointFromAttrs(attrs), revert = rev)
+
         elif name == "key":
-            thing = Key(loc = pointFromAttrs(attrs))
+            thing = Key(self.game, loc = pointFromAttrs(attrs), revert = rev)
         else:
             return
 
@@ -50,10 +54,13 @@ class LevelBuilder(object):
 
     def build(self, levelString):
         self.world = World(self.game)
+        self.game.world = self.world
 
         xmlFile = open("app/level/" + levelString + ".rvt", 'r')
         self.parser.ParseFile(xmlFile)
         xmlFile.close()
+
+        self.world.initPlayer()
 
         self.game.cameraStalkee = self.world.player
         self.world.setBackgroundColor(self.bg)

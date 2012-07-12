@@ -4,18 +4,18 @@ from panda3d.ode import OdeBoxGeom, OdeMass
 from ..lib.physical import Physical
 
 class Player(Physical):
-    def __init__(self, world, loc = Point3()):
+    def __init__(self, game, loc = Point3()):
         """
         the location is the bottom-left corner of the platform
         """
 
-        geom = OdeBoxGeom(world.space, 2,5,2)
+        geom = OdeBoxGeom(game.world.space, 2,5,2)
         mass = OdeMass()
         mass.setBox(1000, 2, 5, 2)
 
-        super(Player, self).__init__(world, mass, geom, "player", loc, False)
+        super(Player, self).__init__(game, mass, geom, "player", loc = loc, rot = False, revert = False)
 
-        self.setRevertable(False)
+        #self.setRevertable(False)
 
         self.key = {"left": False, "right": False}
 
@@ -40,8 +40,8 @@ class Player(Physical):
         else:
             self.direction = 0
 
-        if self.body.getLinearVel()[0] * self.direction < 20:
-            self.body.addRelForce(VBase3(10000000*self.direction, 0,0))#setLinearVel(self.direction * self.speed, self.body.getLinearVel().getY(), 0)
+        if self.body.getLinearVel()[0] * self.direction < self.speed:
+            self.body.addRelForce(VBase3(1000000*self.direction, 0,0))#setLinearVel(self.direction * self.speed, self.body.getLinearVel().getY(), 0)
 
         return task.cont
 

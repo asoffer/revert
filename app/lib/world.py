@@ -24,7 +24,7 @@ class World(object):
         self.world.setGravity(0,  -20, 0) #FIXME (0,-9.81) would be realistic physics
 
         self.world.initSurfaceTable(1)
-        self.world.setSurfaceEntry(0, 0, 0.6, 0.0, 9.1, 0.9, 0.00001, 1.0, 0.02) #FIXME I have no idea what this means
+        self.world.setSurfaceEntry(0, 0, 0.8, 0.0, 9.1, 0.9, 0.00001, 1.0, 0.02) #FIXME I have no idea what this means
 
         self.space = OdeSimpleSpace()
         self.space.setAutoCollideWorld(self.world)
@@ -34,8 +34,9 @@ class World(object):
         self.timeAccumulator = 0
         self.dt = 1.0 / 60.0
 
+    def initPlayer(self):
         #give it a player
-        self.player = Player(self, Point3(0,10,0))
+        self.player = Player(self.game, Point3(0,10,0))
         self.add(self.player)
         self.game.taskMgr.add(self.player.move, "movePlayer")
 
@@ -50,7 +51,7 @@ class World(object):
         self.renderer.setFog(self.fog)
 
         #initialize a hud
-        self.hud = HUD()
+        self.hud = HUD(self.game)
         self.add(self.hud)
 
         self.lights = [DirectionalLight('l1'), DirectionalLight('l2')]
@@ -59,7 +60,6 @@ class World(object):
             n = self.renderer.attachNewNode(self.lights[i])
             n.setHpr(40 * i - 20, -120, 0)
             self.renderer.setLight(n)
-
 
 
     def add(self, obj):

@@ -8,8 +8,8 @@ class Physical(Touchable):
     The Physical class is the base class for anything that responds to physics
     """
 
-    def __init__(self, world, mass, geom, model, loc = Point3(), rot = True):
-        super(Physical, self).__init__(world, geom, model, loc)
+    def __init__(self, game, mass, geom, model, loc = Point3(), revert = True, rot = True):
+        super(Physical, self).__init__(game, geom, model, loc = loc, revert = revert)
 
         self.toRevert['rot'] = self.setRot
         self.toSave['rot'] = self.getRot
@@ -19,9 +19,9 @@ class Physical(Touchable):
         self.toRevert['angVel'] = self.setAngVel
         self.toSave['angVel'] = self.getAngVel
 
-        self.setRevertable(True)
+        #self.setRevertable(True)
 
-        self.body = OdeBody(world.world)
+        self.body = OdeBody(game.world.world)
         self.mass = mass
         self.body.setMass(self.mass)
 
