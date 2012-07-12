@@ -34,10 +34,8 @@ class LevelBuilder(object):
             thing = Ball(self.game, loc = pointFromAttrs(attrs), revert = rev)
         elif name == "block":
             thing = Block(self.game, loc = pointFromAttrs(attrs), revert = rev)
-
         elif name == "platform":
-            thing = Platform(self.game, float(attrs["width"]), float(attrs["rot"]), loc = pointFromAttrs(attrs), revert = rev)
-
+            thing = Platform(self.game, float(attrs["width"]), float(attrs["rot"]), loc = pointFromAttrs(attrs))
         elif name == "key":
             thing = Key(self.game, loc = pointFromAttrs(attrs), revert = rev)
         else:

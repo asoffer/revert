@@ -25,10 +25,6 @@ class Game(ShowBase, CameraMaster):
         self.accept('arrow_right-up', lambda: messenger.send("player_right_up"))
         self.accept('arrow_up', lambda: messenger.send("player_jump"))
 
-        self.setBackgroundColor(Point3(0.7,0.8,0.9))
-
-
-
         self.noGlow = self.loader.loadTexture("app/media/effects/empty.png")
         self.noGlowTextureStage = TextureStage('noGlow')
         self.noGlowTextureStage.setMode(TextureStage.MModulateGlow)
@@ -37,15 +33,13 @@ class Game(ShowBase, CameraMaster):
         self.glowTextureStage = TextureStage('glow')
         self.glowTextureStage.setMode(TextureStage.MModulateGlow)
 
-
-
-        self.filters = CommonFilters(base.win, base.cam)
-        filterok = self.filters.setBloom(blend=(0,0,0,1), desat=-0.5, intensity=3.0, size="small")
+    def initFilters(self):
+        self.filters = CommonFilters(self.win, self.cam)
+        filterok = self.filters.setBloom(blend=(0,0,0,1), desat=-0.3, intensity=1.5, size="small")
         if (filterok == False):
-            addTitle("Toon Shader: Video card not powerful enough to do image postprocessing")
+            print "GPU not powerful enough to use bloom filter"
             return
  
-
 
     def setWindowName(self, name):
         props = WindowProperties()
@@ -57,10 +51,9 @@ class Game(ShowBase, CameraMaster):
 
 APP = Game()
 
-
-
 APP.build("test")
 APP.world.init()
+APP.initFilters()
 
 APP.taskMgr.doMethodLater(0.1, APP.world.step, "physics")
 
