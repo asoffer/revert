@@ -3,13 +3,15 @@ from panda3d.ode import OdeWorld, OdeBody, OdeMass, OdeBoxGeom
 
 from .touchable import Touchable
 
+import app.world
+
 class Physical(Touchable):
     """ 
     The Physical class is the base class for anything that responds to physics
     """
 
-    def __init__(self, game, mass, geom, model, loc = Point3(), revert = True, rot = True):
-        super(Physical, self).__init__(game, geom, model, loc = loc, revert = revert)
+    def __init__(self, mass, geom, model, loc = Point3(), revert = True, rot = True):
+        super(Physical, self).__init__(geom, model, loc = loc, revert = revert)
 
         self.toRevert['rot'] = self.setRot
         self.toSave['rot'] = self.getRot
@@ -21,7 +23,7 @@ class Physical(Touchable):
 
         #self.setRevertable(True)
 
-        self.body = OdeBody(game.world.world)
+        self.body = OdeBody(app.world.WORLD.world)
         self.mass = mass
         self.body.setMass(self.mass)
 

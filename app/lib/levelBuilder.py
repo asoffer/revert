@@ -1,18 +1,15 @@
 from pandac.PandaModules import Point3, VBase3
 
+import app.world as World
+
 import xml.parsers.expat as expat
-from ..objects.ball import Ball
+from ..objects.ball import  Ball
 from ..objects.block import Block
 from ..objects.platform import Platform
 from ..objects.key import Key
 
-from world import World
-
 class LevelBuilder(object):
-    def __init__(self, game):
-
-        self.game = game
-        self.world = None
+    def __init__(self):
 
         #default background color is the bland gray
         self.bg = VBase3(0.5,0.5,0.5)
@@ -31,17 +28,19 @@ class LevelBuilder(object):
             self.bg = VBase3(float(attrs['r']), float(attrs['g']), float(attrs['b']))
             return
         elif name == "ball":
-            thing = Ball(self.game, loc = pointFromAttrs(attrs), revert = rev)
+            thing = Ball(loc = pointFromAttrs(attrs), revert = rev)
         elif name == "block":
-            thing = Block(self.game, loc = pointFromAttrs(attrs), revert = rev)
+            thing = Block(loc = pointFromAttrs(attrs), revert = rev)
         elif name == "platform":
-            thing = Platform(self.game, float(attrs["width"]), float(attrs["rot"]), loc = pointFromAttrs(attrs))
+            thing = Platform(float(attrs["width"]), float(attrs["rot"]), loc = pointFromAttrs(attrs))
+        elif name == "wall":
+            thing = Platform(float(attrs["height"]), rot = 90, loc = pointFromAttrs(attrs))
         elif name == "key":
-            thing = Key(self.game, loc = pointFromAttrs(attrs), revert = rev)
+            thing = Key(loc = pointFromAttrs(attrs), revert = rev)
         else:
             return
 
-        self.world.add(thing)
+        World.add(thing)
 
     def characterData(self, data):
         pass
@@ -51,20 +50,11 @@ class LevelBuilder(object):
 
 
     def build(self, levelString):
-        self.world = World(self.game)
-        self.game.world = self.world
-
         xmlFile = open("app/level/" + levelString + ".rvt", 'r')
         self.parser.ParseFile(xmlFile)
         xmlFile.close()
-
-        self.world.initPlayer()
-
-        self.game.cameraStalkee = self.world.player
-        self.world.setBackgroundColor(self.bg)
-
-        return self.world
-
+        
+        World.setBackgroundColor(self.bg)
 
 def pointFromAttrs(attrs):
     return Point3(float(attrs['x']), float(attrs['y']), 0)

@@ -2,7 +2,7 @@
     <background r="0.7" g="0.8" b="0.9" />
 
     <platform x="0" y="0" width = "30" rot = "0"/>
-    <platform x="10" y="5" width = "10" rot = "90"/>
+    <wall x="10" y="5" height = "10" />
     <platform x="30" y="0" width = "10" rot = "0"/>
     <platform x="60" y="5" width = "10" rot = "0"/>
     

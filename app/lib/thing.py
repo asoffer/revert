@@ -2,6 +2,8 @@ from copy import deepcopy
 from pandac.PandaModules import Point3, Vec3
 from direct.showbase import DirectObject
 
+import app.game
+
 THING_ID = 0
 THING_REVERT_DISTANCE = 3
 
@@ -12,10 +14,9 @@ class Thing(object, DirectObject.DirectObject):
 
     REVERTS_VISIBLE = 8
 
-    def __init__(self, game, model, loc = Point3(), revert = True):
+    def __init__(self, model, loc = Point3(), revert = True):
         super(Thing, self).__init__()
         DirectObject.DirectObject.__init__(self)
-
 
         global THING_ID
         THING_ID += 1
@@ -24,19 +25,17 @@ class Thing(object, DirectObject.DirectObject):
         self.uid = THING_ID
         self.usid = "Thing" + str(self.uid)
 
-        self.game = game
-
         self.stack = []
         self.revertable = revert
 
         #load the model
         self.modelPath = 'app/media/models/%s/%s.egg' % (model, model)
-        self.model = base.loader.loadModel(self.modelPath)
+        self.model = app.game.loader.loadModel(self.modelPath)
         self.model.setPos(loc)
         if self.revertable:
-            self.model.setTexture(self.game.noGlowTextureStage, self.game.noGlow)
+            self.model.setTexture(app.game.noGlowTextureStage, app.game.noGlow)
         else:
-            self.model.setTexture(self.game.glowTextureStage, self.game.glow)
+            self.model.setTexture(app.game.glowTextureStage, app.game.glow)
 
         #list of what to save and what to revert
         self.toRevert = {'model': self.setModel, 'location': self.setPos}

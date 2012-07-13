@@ -8,8 +8,8 @@ class Item(Thing):
     """
 
 
-    def __init__(self, game, model, loc = Point3(), revert = True):
-        super(Item, self).__init__(game, model, loc, revert)
+    def __init__(self, model, loc = Point3(), revert = True):
+        super(Item, self).__init__(model, loc, revert)
 
         self.interval = None
 
