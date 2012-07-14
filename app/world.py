@@ -35,7 +35,7 @@ class World(object):
 
         self.timeAccumulator = 0
         self.dt = 1.0 / 60.0
-
+        
     def setBackgroundColor(self, bg):
         app.game.GAME.setBackgroundColor(bg)
 
@@ -75,7 +75,7 @@ class World(object):
         while(self.timeAccumulator > self.dt):
             self.timeAccumulator -= self.dt
 
-            self.space.autoCollide()
+            #self.space.autoCollide()
             self.world.quickStep(self.dt)
             self.contactGroup.empty()
 
@@ -126,7 +126,6 @@ def getSpace():
     return WORLD.space
 
 
-
 class WorldError(Exception):
     def __init__(self, message):
         super(WorldError, self).__init__()
@@ -134,4 +133,3 @@ class WorldError(Exception):
 
     def __str__(self):
         return self.message
-
