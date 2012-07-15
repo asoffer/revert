@@ -1,6 +1,6 @@
-from pandac.PandaModules import Point3, BitMask32
+from pandac.PandaModules import Point3, BitMask32, TransformState
+from panda3d.bullet import BulletRigidBodyNode
 from .thing import Thing
-
 
 class Interactable(Thing):
     """ 
@@ -10,11 +10,12 @@ class Interactable(Thing):
     def __init__(self, model, loc = Point3(), revert = True):
         super(Interactable, self).__init__(model, loc = loc, revert = revert)
 
-        self.geoms = []
+        #usid already defined because super is already called (all the way up to Thing)
+        self.node = BulletRigidBodyNode(self.usid)
+        self.node.setMass(0) #this default should be changed every time if you want it to have finite mass
+ 
+        self.shapes = []
 
-    def addGeom(self, geom, loc, bitMask):
-        geom.setPosition(loc)
-        geom.setCollideBits(BitMask32(bitMask))
-        self.geoms += [geom]
-
-
+    def addShape(self, s, loc = Point3()):
+        self.shapes += [s]
+        self.node.addShape(s, TransformState.makePos(loc))

@@ -1,7 +1,5 @@
 from pandac.PandaModules import Point3, VBase3
 
-import app.world as World
-
 import xml.parsers.expat as expat
 from ..objects.ball import  Ball
 from ..objects.block import Block
@@ -9,7 +7,9 @@ from ..objects.platform import Platform
 from ..objects.key import Key
 
 class LevelBuilder(object):
-    def __init__(self):
+    def __init__(self, game):
+
+        self.game = game
 
         #default background color is the bland gray
         self.bg = VBase3(0.5,0.5,0.5)
@@ -40,7 +40,7 @@ class LevelBuilder(object):
         else:
             return
 
-        World.add(thing)
+        self.game.add(thing, pointFromAttrs(attrs))
 
     def characterData(self, data):
         pass
@@ -54,7 +54,7 @@ class LevelBuilder(object):
         self.parser.ParseFile(xmlFile)
         xmlFile.close()
         
-        World.setBackgroundColor(self.bg)
+        self.game.setBackgroundColor(self.bg)
 
 def pointFromAttrs(attrs):
     return Point3(float(attrs['x']), float(attrs['y']), 0)

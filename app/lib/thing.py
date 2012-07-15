@@ -1,8 +1,6 @@
 from copy import deepcopy
-from pandac.PandaModules import Point3, Vec3
+from pandac.PandaModules import Point3, Vec3, TextureStage
 from direct.showbase import DirectObject
-
-import app.game
 
 THING_ID = 0
 THING_REVERT_DISTANCE = 3
@@ -13,6 +11,8 @@ class Thing(object, DirectObject.DirectObject):
     """
 
     REVERTS_VISIBLE = 8
+
+
 
     def __init__(self, model, loc = Point3(), revert = True):
         super(Thing, self).__init__()
@@ -30,12 +30,22 @@ class Thing(object, DirectObject.DirectObject):
 
         #load the model
         self.modelPath = 'app/media/models/%s/%s.egg' % (model, model)
-        self.model = app.game.loader.loadModel(self.modelPath)
-        self.model.setPos(loc)
+        self.model = loader.loadModel(self.modelPath)
+
+        ##################### FIXME this should be global.
+        noGlow = loader.loadTexture("app/media/effects/empty.png")
+        noGlowTextureStage = TextureStage('noGlow')
+        noGlowTextureStage.setMode(TextureStage.MModulateGlow)
+
+        glow = loader.loadTexture("app/media/effects/red.png")
+        glowTextureStage = TextureStage('glow')
+        glowTextureStage.setMode(TextureStage.MModulateGlow)
+        ##################### END FIXME
+
         if self.revertable:
-            self.model.setTexture(app.game.noGlowTextureStage, app.game.noGlow)
+            self.model.setTexture(noGlowTextureStage, noGlow)
         else:
-            self.model.setTexture(app.game.glowTextureStage, app.game.glow)
+            self.model.setTexture(glowTextureStage, glow)
 
         #list of what to save and what to revert
         self.toRevert = {'model': self.setModel, 'location': self.setPos}

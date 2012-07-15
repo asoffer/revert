@@ -1,23 +1,14 @@
 from pandac.PandaModules import Point3, Vec3, VBase3
-from panda3d.ode import OdeBoxGeom, OdeMass
 
 from ..lib.physical import Physical
-
-import app.world
 
 class Player(Physical):
     def __init__(self, loc = Point3()):
         """
         the location is the bottom-left corner of the platform
         """
+        super(Player, self).__init__("player", loc = loc, rot = False, revert = False)
 
-        geom = OdeBoxGeom(app.world.WORLD.space, 2,5,2)
-        mass = OdeMass()
-        mass.setBox(1000, 2, 5, 2)
-
-        super(Player, self).__init__(mass, geom, "player", loc = loc, rot = False, revert = False)
-
-        #self.setRevertable(False)
 
         self.key = {"left": False, "right": False}
 
@@ -42,10 +33,10 @@ class Player(Physical):
         else:
             self.direction = 0
 
-        if self.body.getLinearVel()[0] * self.direction < self.speed:
-            self.body.addRelForce(VBase3(1000000*self.direction, 0,0))#setLinearVel(self.direction * self.speed, self.body.getLinearVel().getY(), 0)
+        #if self.body.getLinearVel()[0] * self.direction < self.speed:
+        #    self.body.addRelForce(VBase3(1000000*self.direction, 0,0))#setLinearVel(self.direction * self.speed, self.body.getLinearVel().getY(), 0)
 
         return task.cont
 
     def jump(self):
-        self.body.setLinearVel(self.body.getLinearVel() + VBase3(0,10,0))
+        pass#self.body.setLinearVel(self.body.getLinearVel() + VBase3(0,10,0))

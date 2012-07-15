@@ -1,75 +1,50 @@
 from pandac.PandaModules import Point3, BitMask32, Quat
-from panda3d.ode import OdeWorld, OdeBody, OdeMass, OdeBoxGeom
 
-from .touchable import Touchable
+from .interactable import Interactable
 
-import app.world
-
-class Physical(Touchable):
+class Physical(Interactable):
     """ 
     The Physical class is the base class for anything that responds to physics
     """
 
-    def __init__(self, mass, geom, model, loc = Point3(), revert = True, rot = True):
-        super(Physical, self).__init__(geom, model, loc = loc, revert = revert)
+    def __init__(self, model, loc = Point3(), revert = True, rot = True):
+        super(Physical, self).__init__(model, loc = loc, revert = revert)
 
-        self.toRevert['rot'] = self.setRot
-        self.toSave['rot'] = self.getRot
+        if not rot:
+            self.toRevert['rot'] = self.setRot
+            self.toSave['rot'] = self.getRot
+            self.toRevert['angVel'] = self.setAngVel
+            self.toSave['angVel'] = self.getAngVel
 
         self.toRevert['vel'] = self.setVel
         self.toSave['vel'] = self.getVel
-        self.toRevert['angVel'] = self.setAngVel
-        self.toSave['angVel'] = self.getAngVel
 
-        #self.setRevertable(True)
+        self.node.setMass(1) #this default is lame and should be changed
+        self.node.setActive(True)
 
-        self.body = OdeBody(app.world.WORLD.world)
-        self.mass = mass
-        self.body.setMass(self.mass)
+        self.nodePath = base.render.attachNewNode(self.node)
 
-        self.body.setPosition(self.model.getPos())
-        self.body.setQuaternion(self.model.getQuat())
-
-        self.geom.setBody(self.body)
-
-        self.rot = rot
-
-    def constrainPosQuat(self):
-        """keep the object rotating in the correct plane"""
-
-        #FIXME is there a better way than fixing at every instant?
-        self.body.setPosition(self.body.getPosition()[0], self.body.getPosition()[1], 0)
-
-        if not self.rot:
-            self.body.setQuaternion(Quat.identQuat())
-            return
-
-        q = self.body.getQuaternion()
-        q[1] = 0
-        q[2] = 0
-        q.normalize()
-        self.body.setQuaternion(Quat(q))
 
     def getPos(self):
-        return self.body.getPosition()
+        return self.node.getPos()
 
     def setPos(self, pos):
-        return self.body.setPosition(pos)
+        return self.node.setPos(pos)
 
     def setRot(self, rot):
-        self.body.setQuaternion(Quat(rot))
+        pass
 
     def getRot(self):
-        return self.body.getQuaternion()
+        pass
 
     def setVel(self, vel):
-        self.body.setLinearVel(vel)
+        pass
 
     def getVel(self):
-        return self.body.getLinearVel()
+        pass
 
     def setAngVel(self, angVel):
-        self.body.setAngularVel(angVel)
+        pass
 
     def getAngVel(self):
-        return self.body.getAngularVel()
+        pass

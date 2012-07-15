@@ -1,6 +1,5 @@
-from pandac.PandaModules import Fog, Point3, VBase4, DirectionalLight, PointLight
-from panda3d.ode import OdeWorld, OdeSimpleSpace, OdeJointGroup
-from panda3d.core import Quat
+from pandac.PandaModules import Fog, Point3, Vec3, VBase4, DirectionalLight
+from panda3d.bullet import BulletWorld
 
 from .objects.player import Player
 from .objects.hud import HUD
@@ -22,16 +21,8 @@ class World(object):
         self.fog = Fog("world fog")
 
         #physics
-        self.world = OdeWorld()
-        self.world.setGravity(0,  -20, 0) #FIXME (0,-9.81) would be realistic physics
-
-        self.world.initSurfaceTable(1)
-        self.world.setSurfaceEntry(0, 0, 0.8, 0.0, 9.1, 0.9, 0.00001, 1.0, 0.02) #FIXME I have no idea what this means
-
-        self.space = OdeSimpleSpace()
-        self.space.setAutoCollideWorld(self.world)
-        self.contactGroup = OdeJointGroup()
-        self.space.setAutoCollideJointGroup(self.contactGroup)
+        self.world = BulletWorld()
+        self.world.setGravity(Vec3(0,  -20, 0)) #FIXME (0,-9.81, 0) would be realistic physics
 
         self.timeAccumulator = 0
         self.dt = 1.0 / 60.0
@@ -71,17 +62,12 @@ class World(object):
             self.things += [obj]
 
     def step(self, task):
-        self.timeAccumulator += globalClock.getDt()
-        while(self.timeAccumulator > self.dt):
-            self.timeAccumulator -= self.dt
+        self.world.doPhysics(self.dt)
+        #self.timeAccumulator += globalClock.getDt()
+        #while(self.timeAccumulator > self.dt):
+        #    self.timeAccumulator -= self.dt
 
-            #self.space.autoCollide()
-            self.world.quickStep(self.dt)
-            self.contactGroup.empty()
-
-        for x in self.things:
-            x.constrainPosQuat()
-            x.model.setPosQuat(app.game.GAME.render, x.body.getPosition(), Quat(x.body.getQuaternion()))
+        #    self.world.doPhysics(self.dt)
 
         return task.cont
 
