@@ -10,7 +10,7 @@
     <key x="5" y="5" revert = "off" />
  
     <block x="3" y="3" revert = "off" />
-    <block x="3" y="5" />
+    <block x="3" y="6" />
  
     <ball x="-3" y="5" />
 </level>

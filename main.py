@@ -10,7 +10,7 @@ from app.lib.levelBuilder import LevelBuilder
 from app.lib.interactable import Interactable
 from app.lib.thing import Thing
 from app.objects.hud import HUD
-
+from app.objects.player import Player
 
 
 class Game(ShowBase, CameraMaster):
@@ -32,18 +32,26 @@ class Game(ShowBase, CameraMaster):
         self.world = BulletWorld()
         self.world.setGravity(Vec3(0, -9.81, 0))
         self.world.setDebugNode(self.debugNP.node())
+        self.debugNP.node().showWireframe(True)
+        self.debugNP.node().showConstraints(True)
+        self.debugNP.node().showBoundingBoxes(False)
+        self.debugNP.node().showNormals(False)
+        self.debugNP.show()
 
     def build(self, lvlString):
         LevelBuilder(self).build(lvlString)
 
-    def add(self, thing, loc):
+    def add(self, thing, loc = Point3()):
         if isinstance(thing, Interactable):
             thing.nodePath = self.worldNP.attachNewNode(thing.node)
             thing.nodePath.setCollideMask(BitMask32.allOn())
             self.world.attachRigidBody(thing.nodePath.node())
-        if isinstance(thing, Thing):
             thing.model.reparentTo(thing.nodePath)
             thing.nodePath.setPos(loc)
+        else:
+            thing.model.reparentTo(render)
+ 
+
 
     def initFilters(self):
         self.filters = CommonFilters(self.win, self.cam)
@@ -62,12 +70,7 @@ class Game(ShowBase, CameraMaster):
 
         #initialize a hud
         self.hud = HUD()
-        #self.add(self.hud)
-
-        #initialize player
-        #self.player = Player(Point3(0,10,0))
-        #self.add(self.player)
-        #self.taskMgr.add(self.player.move, "movePlayer")
+        self.add(self.hud)
 
         self.lights = [DirectionalLight('l1'), DirectionalLight('l2')]
         for i in range(len(self.lights)):
@@ -75,6 +78,21 @@ class Game(ShowBase, CameraMaster):
             n = render.attachNewNode(self.lights[i])
             n.setHpr(40 * i - 20, -120, 0)
             render.setLight(n)
+
+    def initPlayer(self, loc):
+        self.player = Player(loc)
+        self.add(self.player, loc)
+        self.taskMgr.add(self.player.move, "movePlayer")
+
+    def initListeners(self):
+        self.accept('s',lambda: messenger.send("save"))
+        self.accept('r',lambda: messenger.send("revert"))
+        self.accept('arrow_left', lambda: messenger.send("player_left_down"))
+        self.accept('arrow_left-up', lambda: messenger.send("player_left_up"))
+        self.accept('arrow_right', lambda: messenger.send("player_right_down"))
+        self.accept('arrow_right-up', lambda: messenger.send("player_right_up"))
+        self.accept('arrow_up', lambda: messenger.send("player_jump"))
+
 
     def update(self, task):
         self.world.doPhysics(self.dt, 5, 1.0/180.0)
@@ -87,6 +105,10 @@ GAME.build("test")
 
 GAME.initLightingAndGraphics()
 GAME.initFilters()
+
+GAME.initPlayer(Point3(0, 10, 0))
+GAME.initListeners()
+
 
 GAME.taskMgr.doMethodLater(0.1, GAME.update, "physics")
 

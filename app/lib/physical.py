@@ -26,10 +26,10 @@ class Physical(Interactable):
 
 
     def getPos(self):
-        return self.node.getPos()
+        return self.nodePath.getPos()
 
     def setPos(self, pos):
-        return self.node.setPos(pos)
+        return self.nodePath.setPos(pos)
 
     def setRot(self, rot):
         pass

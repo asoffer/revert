@@ -1,4 +1,5 @@
-from pandac.PandaModules import Point3, Vec3, Mat3, Quat
+from pandac.PandaModules import Point3, Vec3
+from panda3d.bullet import BulletBoxShape
 
 from ..lib.interactable import Interactable
 
@@ -10,5 +11,9 @@ class Platform(Interactable):
 
         self.width = width
         super(Platform, self).__init__("platform", loc, False)
-        #self.model.setScale(width, 1, 1)
+
+        self.addShape(BulletBoxShape(Vec3(width / 2, 0.2, 1.5)))
+
+        self.model.setScale(width / 2, 1, 1)
+
  

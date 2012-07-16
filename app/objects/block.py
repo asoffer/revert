@@ -11,4 +11,4 @@ class Block(Physical):
 
         super(Block, self).__init__("block", loc, revert = revert)
 
-        self.addShape(BulletBoxShape(Vec3(1, 1, 1)))
+        self.addShape(BulletBoxShape(Vec3(1.5, 1.5, 1.5)))

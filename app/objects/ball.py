@@ -1,4 +1,5 @@
 from pandac.PandaModules import Point3
+from panda3d.bullet import BulletSphereShape
 
 from ..lib.physical import Physical
 
@@ -9,5 +10,7 @@ class Ball(Physical):
         """
 
         super(Ball, self).__init__("ball", loc, revert = revert)
+
+        self.addShape(BulletSphereShape(1))
 
 

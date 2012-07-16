@@ -1,4 +1,6 @@
-from pandac.PandaModules import Point3, Vec3, VBase3
+from pandac.PandaModules import Point3, Vec3
+from panda3d.bullet import BulletBoxShape
+
 
 from ..lib.physical import Physical
 
@@ -8,6 +10,8 @@ class Player(Physical):
         the location is the bottom-left corner of the platform
         """
         super(Player, self).__init__("player", loc = loc, rot = False, revert = False)
+
+        self.addShape(BulletBoxShape(Vec3(1, 2.5, 1)))
 
 
         self.key = {"left": False, "right": False}
