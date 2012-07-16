@@ -33,7 +33,7 @@ class Item(Thing):
         return self.model.getHpr()
 
     def setInterval(self, startRot):
-        self.interval = self.model.hprInterval(6, startRot + Vec3(0, 0, 360), startHpr = startRot)
+        self.interval = self.model.hprInterval(6, startRot + Vec3(360, 0, 0), startHpr = startRot)
         self.interval.loop()
 
 

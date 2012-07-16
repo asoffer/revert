@@ -5,8 +5,8 @@
       <author>Blender User</author>
       <authoring_tool>Blender 2.57.0 r36147M</authoring_tool>
     </contributor>
-    <created>2012-07-11T23:42:20</created>
-    <modified>2012-07-11T23:42:20</modified>
+    <created>2012-07-15T23:38:00</created>
+    <modified>2012-07-15T23:38:00</modified>
     <unit name="meter" meter="1"/>
     <up_axis>Z_UP</up_axis>
   </asset>
@@ -180,9 +180,9 @@
     <visual_scene id="Scene" name="Scene">
       <node id="Cylinder" type="NODE">
         <translate sid="location">-0.3193803 0 0</translate>
-        <rotate sid="rotationZ">0 0 1 0</rotate>
-        <rotate sid="rotationY">0 1 0 89.99995</rotate>
-        <rotate sid="rotationX">1 0 0 0</rotate>
+        <rotate sid="rotationZ">0 0 1 89.99995</rotate>
+        <rotate sid="rotationY">0 1 0 -3.66554e-5</rotate>
+        <rotate sid="rotationX">1 0 0 90</rotate>
         <scale sid="scale">0.1226553 0.1226553 0.1226553</scale>
         <instance_geometry url="#Cylinder-mesh">
           <bind_material>

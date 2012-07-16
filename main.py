@@ -30,7 +30,7 @@ class Game(ShowBase, CameraMaster):
         self.debugNP = self.worldNP.attachNewNode(BulletDebugNode('Debug'))
  
         self.world = BulletWorld()
-        self.world.setGravity(Vec3(0, -9.81, 0))
+        self.world.setGravity(Vec3(0, 0, -9.81))
         self.world.setDebugNode(self.debugNP.node())
         self.debugNP.node().showWireframe(True)
         self.debugNP.node().showConstraints(True)
@@ -52,7 +52,6 @@ class Game(ShowBase, CameraMaster):
             thing.model.reparentTo(render)
  
 
-
     def initFilters(self):
         self.filters = CommonFilters(self.win, self.cam)
         filterok = self.filters.setBloom(blend=(0,0,0,1), desat=-0.3, intensity=1.5, size="small")
@@ -64,7 +63,7 @@ class Game(ShowBase, CameraMaster):
         self.fog = Fog("world fog")
         self.fog.setColor(self.getBackgroundColor())
         self.fog.setLinearOnsetPoint(0,0,0)
-        self.fog.setLinearOpaquePoint(0,0,-Thing.REVERTS_VISIBLE * 3)#THING_REVERT_DISTANCE)
+        self.fog.setLinearOpaquePoint(0,-Thing.REVERTS_VISIBLE * 3, 0)#THING_REVERT_DISTANCE)
         render.attachNewNode(self.fog)
         render.setFog(self.fog)
 
@@ -80,8 +79,8 @@ class Game(ShowBase, CameraMaster):
             render.setLight(n)
 
     def initPlayer(self, loc):
-        self.player = Player(loc)
-        self.add(self.player, loc)
+        self.player = Player(self.worldNP, self.world, loc)
+        #self.add(self.player, loc)
         self.taskMgr.add(self.player.move, "movePlayer")
 
     def initListeners(self):
@@ -106,7 +105,7 @@ GAME.build("test")
 GAME.initLightingAndGraphics()
 GAME.initFilters()
 
-GAME.initPlayer(Point3(0, 10, 0))
+GAME.initPlayer(Point3(0, 0, 10))
 GAME.initListeners()
 
 

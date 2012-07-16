@@ -24,5 +24,4 @@ class CameraMaster(object):
         return task.cont
 
     def initCamera(self):
-        self.camera.setPos(0,11, -self.cameraZoom)
-        self.camera.setHpr(0,-90,0)
+        self.camera.setPos(0, self.cameraZoom, 11)

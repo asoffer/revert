@@ -57,4 +57,4 @@ class LevelBuilder(object):
         self.game.setBackgroundColor(self.bg)
 
 def pointFromAttrs(attrs):
-    return Point3(float(attrs['x']), float(attrs['y']), 0)
+    return Point3(float(attrs['x']), 0, float(attrs['y']))
