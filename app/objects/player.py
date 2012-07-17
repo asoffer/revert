@@ -10,14 +10,13 @@ class Player(Thing):
         """
         super(Player, self).__init__("player", loc = loc, revert = False)
         
-        self.node = BulletCharacterControllerNode(BulletBoxShape(Vec3(1, 1, 2.5)), 0.4, 'Player')
+        self.node = BulletCharacterControllerNode(BulletBoxShape(Vec3(1, 1, 2.5)), 0.4, 'player')
         self.nodePath = worldNP.attachNewNode(self.node)
 
         self.key = {"left": False, "right": False}
 
         self.direction = 0
         self.speed = 7
-
         self.accept("player_left_down", self.setKey, ["left", True])
         self.accept("player_left_up", self.setKey, ["left", False])
         self.accept("player_right_down", self.setKey, ["right", True])
@@ -27,7 +26,6 @@ class Player(Thing):
         world.attachCharacter(self.node)
 
         self.nodePath.setPos(loc)
-
 
     def setKey(self, k, v):
         self.key[k] = v

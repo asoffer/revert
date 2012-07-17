@@ -1,5 +1,5 @@
 from copy import deepcopy
-from pandac.PandaModules import Point3, Vec3, TextureStage
+from pandac.PandaModules import Point3, Vec3, TextureStage, NodePath
 from direct.showbase import DirectObject
 
 THING_ID = 0
@@ -11,8 +11,6 @@ class Thing(object, DirectObject.DirectObject):
     """
 
     REVERTS_VISIBLE = 8
-
-
 
     def __init__(self, model, loc = Point3(), revert = True):
         super(Thing, self).__init__()
@@ -31,6 +29,8 @@ class Thing(object, DirectObject.DirectObject):
         #load the model
         self.modelPath = 'app/media/models/%s/%s.egg' % (model, model)
         self.model = loader.loadModel(self.modelPath)
+        self.nodePath = self.model
+        self.node = self.nodePath.node()
 
         ##################### FIXME this should be global.
         noGlow = loader.loadTexture("app/media/effects/empty.png")
@@ -48,26 +48,24 @@ class Thing(object, DirectObject.DirectObject):
             self.model.setTexture(glowTextureStage, glow)
 
         #list of what to save and what to revert
-        self.toRevert = {'model': self.setModel, 'location': self.setPos}
-        self.toSave = {'model': self.getModel, 'location': self.getPos}
+        self.toRevert = {'pos': self.setPos, 'rot': self.setRot}
+        self.toSave = {'pos': self.getPos, 'rot': self.getRot}
 
         #listen for saving and reverting
         self.accept("save", self.save)
         self.accept("revert", self.revert)
 
-    def getModel(self):
-        return self.model
-
-    def setModel(self, m):
-        self.model.detachNode()
-        self.model = m
-        self.model.reparentTo(base.render)
-
     def setPos(self, pos):
-        self.model.setPos(pos)
+        self.nodePath.setPos(pos)
 
     def getPos(self):
-        return self.model.getPos()
+        return Point3(self.nodePath.getPos())
+
+    def setRot(self, rot):
+        self.nodePath.setHpr(rot)
+
+    def getRot(self):
+        return Vec3(self.nodePath.getHpr())
 
     def save(self):
         """
@@ -80,16 +78,18 @@ class Thing(object, DirectObject.DirectObject):
 
         state = {}
         for x in self.toSave:
-            state[x] = deepcopy(self.toSave[x]())
+            state[x] = self.toSave[x]()
 
-        #made a new model, reparent it so it displays
+        state["model"] = deepcopy(self.model)
         state["model"].reparentTo(base.render)
-
+        state["model"].setPos(self.nodePath.getPos())
+        state["model"].setHpr(self.nodePath.getHpr())
+ 
         #add it to the stack
         self.stack.append(state)
 
         for s in self.stack:
-            s["model"].setPos(s["model"].getPos() + Vec3(0,0,-THING_REVERT_DISTANCE))
+            s["model"].setY(s["model"].getY() + THING_REVERT_DISTANCE)
 
     def revert(self):
         """
@@ -100,12 +100,11 @@ class Thing(object, DirectObject.DirectObject):
             return
 
         for s in self.stack:
-            s["model"].setPos(s["model"].getPos() + Vec3(0,0,THING_REVERT_DISTANCE))
+            s["model"].setY(s["model"].getY() - THING_REVERT_DISTANCE)
 
         state = self.stack.pop()
 
-        #not sure if this helps, but it can't hurt
-        self.model.detachNode()
+        state["model"].removeNode()
 
         for x in self.toRevert:
             self.toRevert[x](state[x])

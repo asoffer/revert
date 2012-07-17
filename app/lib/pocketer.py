@@ -10,8 +10,6 @@ class Pocketer(Touchable):
 
         self.pocket = []
 
-        self.geom.setCollideBits(BitMask32(0x00000011))
-
     def pocket(self, obj):
         self.pocket += [obj]
 

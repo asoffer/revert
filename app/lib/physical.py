@@ -23,19 +23,7 @@ class Physical(Interactable):
         self.node.setActive(True)
 
         self.nodePath = base.render.attachNewNode(self.node)
-
-
-    def getPos(self):
-        return self.nodePath.getPos()
-
-    def setPos(self, pos):
-        return self.nodePath.setPos(pos)
-
-    def setRot(self, rot):
-        pass
-
-    def getRot(self):
-        pass
+        self.nodePath.setPos(loc)
 
     def setVel(self, vel):
         pass
