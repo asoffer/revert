@@ -1,5 +1,5 @@
 from direct.showbase.ShowBase import ShowBase
-from pandac.PandaModules import Point3, Vec3, WindowProperties, BitMask32, Fog, VBase4, DirectionalLight
+from pandac.PandaModules import Point3, Vec3, WindowProperties, BitMask32, Fog, VBase4, DirectionalLight, TransformState
 from direct.filter.CommonFilters import CommonFilters
 
 from panda3d.bullet import BulletWorld, BulletDebugNode
@@ -26,7 +26,10 @@ class Game(ShowBase, CameraMaster):
 
         self.setFrameRateMeter(True)
 
-        self.worldNP = render.attachNewNode('World')
+        self.fog = Fog("world fog")
+        self.fogNP = render.attachNewNode(self.fog)
+
+        self.worldNP = self.fogNP.attachNewNode('World')
         self.debugNP = self.worldNP.attachNewNode(BulletDebugNode('Debug'))
  
         self.world = BulletWorld()
@@ -38,6 +41,8 @@ class Game(ShowBase, CameraMaster):
         self.debugNP.node().showNormals(False)
         self.debugNP.show()
 
+        self.physicals = []
+
     def build(self, lvlString):
         LevelBuilder(self).build(lvlString)
 
@@ -48,6 +53,8 @@ class Game(ShowBase, CameraMaster):
             self.world.attachRigidBody(thing.nodePath.node())
             thing.model.reparentTo(thing.nodePath)
             thing.nodePath.setPos(loc)
+            self.physicals += [thing]
+
         else:
             thing.model.reparentTo(render)
  
@@ -60,11 +67,9 @@ class Game(ShowBase, CameraMaster):
             return
 
     def initLightingAndGraphics(self):
-        self.fog = Fog("world fog")
         self.fog.setColor(self.getBackgroundColor())
         self.fog.setLinearOnsetPoint(0,0,0)
-        self.fog.setLinearOpaquePoint(0,-Thing.REVERTS_VISIBLE * 3, 0)#THING_REVERT_DISTANCE)
-        render.attachNewNode(self.fog)
+        self.fog.setLinearOpaquePoint(0,Thing.REVERTS_VISIBLE * 3, 0)#THING_REVERT_DISTANCE)
         render.setFog(self.fog)
 
         #initialize a hud
@@ -73,9 +78,9 @@ class Game(ShowBase, CameraMaster):
 
         self.lights = [DirectionalLight('l1'), DirectionalLight('l2')]
         for i in range(len(self.lights)):
-            self.lights[i].setColor(VBase4(0.7, 0.7, 0.7, 1))
+            self.lights[i].setColor(VBase4(0.5, 0.5, 0.5, 1))
             n = render.attachNewNode(self.lights[i])
-            n.setHpr(40 * i - 20, -120, 0)
+            n.setHpr(40 * i - 20, -40, 40) #FIXME tweak the lighting, maybe
             render.setLight(n)
 
     def initPlayer(self, loc):
@@ -95,6 +100,13 @@ class Game(ShowBase, CameraMaster):
 
     def update(self, task):
         self.world.doPhysics(self.dt, 5, 1.0/180.0)
+
+        #constraints
+        for thing in self.physicals:
+            thing.nodePath.setY(0)
+            thing.nodePath.setH(0)
+            thing.nodePath.setP(0)
+
         return task.cont
 
 
@@ -104,6 +116,7 @@ GAME.build("test")
 
 GAME.initLightingAndGraphics()
 GAME.initFilters()
+
 
 GAME.initPlayer(Point3(0, 0, 10))
 GAME.initListeners()

@@ -1,4 +1,4 @@
-from pandac.PandaModules import Point3, BitMask32, TransformState
+from pandac.PandaModules import Point3, Vec3, BitMask32, TransformState
 from panda3d.bullet import BulletRigidBodyNode
 from .thing import Thing
 
@@ -16,6 +16,6 @@ class Interactable(Thing):
  
         self.shapes = []
 
-    def addShape(self, s, loc = Point3()):
+    def addShape(self, s, loc = Point3(), rot = 0):
         self.shapes += [s]
-        self.node.addShape(s, TransformState.makePos(loc))
+        self.node.addShape(s, TransformState.makePosHpr(loc, Vec3(0, 0, rot)))

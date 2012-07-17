@@ -1,4 +1,4 @@
-from pandac.PandaModules import Point3, BitMask32, Quat
+from pandac.PandaModules import Point3, Vec3
 
 from .interactable import Interactable
 
@@ -10,9 +10,7 @@ class Physical(Interactable):
     def __init__(self, model, loc = Point3(), revert = True, rot = True):
         super(Physical, self).__init__(model, loc = loc, revert = revert)
 
-        if not rot:
-            self.toRevert['rot'] = self.setRot
-            self.toSave['rot'] = self.getRot
+        if rot:
             self.toRevert['angVel'] = self.setAngVel
             self.toSave['angVel'] = self.getAngVel
 
@@ -26,13 +24,13 @@ class Physical(Interactable):
         self.nodePath.setPos(loc)
 
     def setVel(self, vel):
-        pass
+        self.node.setLinearVelocity(vel) #FIXME eh? almost working?
 
     def getVel(self):
-        pass
+        return Vec3(self.node.getLinearVelocity())
 
     def setAngVel(self, angVel):
-        pass
+        self.node.setAngularVelocity(angVel)
 
     def getAngVel(self):
-        pass
+        return Vec3(self.node.getAngularVelocity())

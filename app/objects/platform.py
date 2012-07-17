@@ -11,9 +11,8 @@ class Platform(Interactable):
 
         self.width = width
         super(Platform, self).__init__("platform", loc, False)
-
-        self.addShape(BulletBoxShape(Vec3(width / 2, 1.5, 0.2)))
+        
+        self.addShape(BulletBoxShape(Vec3(width / 2, 1.5, 0.2)), rot = rot)
 
         self.model.setScale(width / 2, 1, 1)
-
- 
+        self.model.setHpr(0, 0, rot)
