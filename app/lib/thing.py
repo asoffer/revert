@@ -42,6 +42,7 @@ class Thing(object, DirectObject.DirectObject):
         glowTextureStage.setMode(TextureStage.MModulateGlow)
         ##################### END FIXME
 
+        #glow if it should not revert
         if self.revertable:
             self.model.setTexture(noGlowTextureStage, noGlow)
         else:

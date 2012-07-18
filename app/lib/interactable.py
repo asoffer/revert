@@ -1,5 +1,5 @@
 from pandac.PandaModules import Point3, Vec3, BitMask32, TransformState
-from panda3d.bullet import BulletRigidBodyNode
+from panda3d.bullet import BulletRigidBodyNode, BulletGhostNode
 from .thing import Thing
 
 class Interactable(Thing):
@@ -13,9 +13,18 @@ class Interactable(Thing):
         #usid already defined because super is already called (all the way up to Thing)
         self.node = BulletRigidBodyNode(self.usid)
         self.node.setMass(0) #this default should be changed every time if you want it to have finite mass
+
+        self.ghostNode = BulletGhostNode("Ghost" + self.usid)
  
         self.shapes = []
+        self.ghostShapes = []
 
-    def addShape(self, s, loc = Point3(), rot = 0):
-        self.shapes += [s]
-        self.node.addShape(s, TransformState.makePosHpr(loc, Vec3(0, 0, rot)))
+    def addShape(self, shape, loc = Point3(), rot = 0):
+        self.shapes += [shape]
+        self.node.addShape(shape, TransformState.makePosHpr(loc, Vec3(0, 0, rot)))
+
+    def addGhostShape(self, shape, loc = Point3(), rot = 0):
+        self.ghostShapes += [shape]
+        self.ghostNode.addShape(shape, TransformState.makePosHpr(loc, Vec3(0,0, rot)))
+
+

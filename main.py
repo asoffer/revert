@@ -8,6 +8,8 @@ from panda3d.bullet import BulletWorld, BulletDebugNode
 from app.masters.cameraMaster import CameraMaster
 from app.lib.levelBuilder import LevelBuilder
 from app.lib.interactable import Interactable
+from app.lib.pocketable import Pocketable
+from app.lib.pocketer import Pocketer
 from app.lib.thing import Thing
 from app.objects.hud import HUD
 from app.objects.player import Player
@@ -41,6 +43,7 @@ class Game(ShowBase, CameraMaster):
         self.debugNP.node().showNormals(False)
         self.debugNP.show()
 
+        self.pockets = []
         self.physicals = []
 
     def build(self, lvlString):
@@ -55,9 +58,16 @@ class Game(ShowBase, CameraMaster):
             thing.nodePath.setPos(loc)
             self.physicals += [thing]
 
+            thing.ghostNP = self.worldNP.attachNewNode(thing.ghostNode)
+            self.world.attachGhost(thing.ghostNP.node())
+            thing.ghostNP.setPos(loc)
+            #FIXME maybe set Hpr as well for both of these?
         else:
             thing.model.reparentTo(render)
- 
+
+        if isinstance(thing, Pocketable) or isinstance(thing, Pocketer):
+           self.pockets += [thing]
+
 
     def initFilters(self):
         self.filters = CommonFilters(self.win, self.cam)
@@ -85,7 +95,6 @@ class Game(ShowBase, CameraMaster):
 
     def initPlayer(self, loc):
         self.player = Player(self.worldNP, self.world, loc)
-        #self.add(self.player, loc)
         self.taskMgr.add(self.player.move, "movePlayer")
 
     def initListeners(self):
@@ -107,7 +116,22 @@ class Game(ShowBase, CameraMaster):
             thing.nodePath.setH(0)
             thing.nodePath.setP(0)
 
+        self.player.nodePath.setY(0)
+
         return task.cont
+
+    def checkGhost(self, task):
+        #FIXME only for player
+        for x in self.pockets:
+            for y in x.ghostNP.node().getOverlappingNodes():
+                if y == self.player.node:
+                    self.player.putInPocket(x)
+                    
+
+        return task.cont
+
+
+
 
 
 
@@ -124,8 +148,9 @@ GAME.initListeners()
 
 GAME.taskMgr.doMethodLater(0.1, GAME.update, "physics")
 
-GAME.run()
+GAME.taskMgr.add(GAME.checkGhost, "checkGhost")
 
+GAME.run()
 
 
 """

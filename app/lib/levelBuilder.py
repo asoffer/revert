@@ -1,10 +1,12 @@
-from pandac.PandaModules import Point3, VBase3
+from pandac.PandaModules import Point3, VBase3, Vec3, BitMask32
 
 import xml.parsers.expat as expat
 from ..objects.ball import  Ball
 from ..objects.block import Block
 from ..objects.platform import Platform
 from ..objects.key import Key
+
+from panda3d.bullet import BulletPlaneShape, BulletRigidBodyNode
 
 class LevelBuilder(object):
     def __init__(self, game):
@@ -53,6 +55,17 @@ class LevelBuilder(object):
         xmlFile = open("app/level/" + levelString + ".rvt", 'r')
         self.parser.ParseFile(xmlFile)
         xmlFile.close()
+
+
+        
+        
+        plane = BulletPlaneShape(Vec3(0,0,1), 0)
+        planeNP = self.game.worldNP.attachNewNode(BulletRigidBodyNode('Ground'))
+        self.game.world.attachRigidBody(planeNP.node())
+        planeNP.node().addShape(plane)
+        print planeNP.getPos()
+        planeNP.setCollideMask(BitMask32.allOn())
+
         
         self.game.setBackgroundColor(self.bg)
 

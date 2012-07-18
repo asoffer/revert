@@ -1,17 +1,20 @@
 from pandac.PandaModules import Point3, Vec3
-from panda3d.bullet import BulletCharacterControllerNode, BulletBoxShape
+from panda3d.bullet import BulletCharacterControllerNode, BulletCapsuleShape, ZUp
 
-from ..lib.thing import Thing
+from ..lib.pocketer import Pocketer
 
-class Player(Thing):
+class Player(Pocketer):
     def __init__(self, worldNP, world, loc = Point3()):
         """
         the location is the bottom-left corner of the platform
         """
         super(Player, self).__init__("player", loc = loc, revert = False)
         
-        self.node = BulletCharacterControllerNode(BulletBoxShape(Vec3(1, 1, 2.5)), 0.4, 'player')
+        self.node = BulletCharacterControllerNode(BulletCapsuleShape(1, 3, ZUp), 0.4, 'player')
+
         self.nodePath = worldNP.attachNewNode(self.node)
+
+        self.model.reparentTo(self.nodePath)
 
         self.key = {"left": False, "right": False}
 
@@ -44,4 +47,6 @@ class Player(Thing):
 
     def jump(self):
         if self.node.isOnGround():
+            self.node.setMaxJumpHeight(5.0)
+            self.node.setJumpSpeed(8.0)
             self.node.doJump()
