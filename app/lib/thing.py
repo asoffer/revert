@@ -29,8 +29,6 @@ class Thing(object, DirectObject.DirectObject):
         #load the model
         self.modelPath = 'app/media/models/%s/%s.egg' % (model, model)
         self.model = loader.loadModel(self.modelPath)
-        self.nodePath = self.model
-        self.node = self.nodePath.node()
 
         ##################### FIXME this should be global.
         noGlow = loader.loadTexture("app/media/effects/empty.png")
@@ -57,16 +55,16 @@ class Thing(object, DirectObject.DirectObject):
         self.accept("revert", self.revert)
 
     def setPos(self, pos):
-        self.nodePath.setPos(pos)
+        self.model.setPos(pos)
 
     def getPos(self):
-        return Point3(self.nodePath.getPos())
+        return Point3(self.model.getPos())
 
     def setRot(self, rot):
-        self.nodePath.setHpr(rot)
+        self.model.setHpr(rot)
 
     def getRot(self):
-        return Vec3(self.nodePath.getHpr())
+        return Vec3(self.model.getHpr())
 
     def save(self):
         """
@@ -83,8 +81,8 @@ class Thing(object, DirectObject.DirectObject):
 
         state["model"] = deepcopy(self.model)
         state["model"].reparentTo(base.render)
-        state["model"].setPos(self.nodePath.getPos())
-        state["model"].setHpr(self.nodePath.getHpr())
+        state["model"].setPos(self.getPos())
+        state["model"].setHpr(self.getRot())
  
         #add it to the stack
         self.stack.append(state)

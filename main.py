@@ -14,6 +14,8 @@ from app.lib.thing import Thing
 from app.objects.hud import HUD
 from app.objects.player import Player
 
+#singleton design paradigm
+GAME = None
 
 class Game(ShowBase, CameraMaster):
     def __init__(self, title):
@@ -33,6 +35,8 @@ class Game(ShowBase, CameraMaster):
 
         self.worldNP = self.fogNP.attachNewNode('World')
         self.debugNP = self.worldNP.attachNewNode(BulletDebugNode('Debug'))
+        self.debugNP.show()
+
  
         self.world = BulletWorld()
         self.world.setGravity(Vec3(0, 0, -9.81))
@@ -41,31 +45,22 @@ class Game(ShowBase, CameraMaster):
         self.debugNP.node().showConstraints(True)
         self.debugNP.node().showBoundingBoxes(False)
         self.debugNP.node().showNormals(False)
-        self.debugNP.show()
-
         self.pockets = []
         self.physicals = []
+
 
     def build(self, lvlString):
         LevelBuilder(self).build(lvlString)
 
     def add(self, thing, loc = Point3()):
         if isinstance(thing, Interactable):
-            thing.nodePath = self.worldNP.attachNewNode(thing.node)
-            thing.nodePath.setCollideMask(BitMask32.allOn())
-            self.world.attachRigidBody(thing.nodePath.node())
-            thing.model.reparentTo(thing.nodePath)
-            thing.nodePath.setPos(loc)
             self.physicals += [thing]
 
-            thing.ghostNP = self.worldNP.attachNewNode(thing.ghostNode)
-            self.world.attachGhost(thing.ghostNP.node())
-            thing.ghostNP.setPos(loc)
             #FIXME maybe set Hpr as well for both of these?
         else:
             thing.model.reparentTo(render)
 
-        if isinstance(thing, Pocketable) or isinstance(thing, Pocketer):
+        if isinstance(thing, Pocketable):
            self.pockets += [thing]
 
 
@@ -94,8 +89,9 @@ class Game(ShowBase, CameraMaster):
             render.setLight(n)
 
     def initPlayer(self, loc):
-        self.player = Player(self.worldNP, self.world, loc)
+        self.player = Player([self.worldNP, self.world], self.world, loc)
         self.taskMgr.add(self.player.move, "movePlayer")
+ 
 
     def initListeners(self):
         self.accept('s',lambda: messenger.send("save"))
@@ -112,9 +108,9 @@ class Game(ShowBase, CameraMaster):
 
         #constraints
         for thing in self.physicals:
-            thing.nodePath.setY(0)
-            thing.nodePath.setH(0)
-            thing.nodePath.setP(0)
+            thing.np.setY(0)
+            thing.np.setH(0)
+            thing.np.setP(0)
 
         self.player.nodePath.setY(0)
 
@@ -123,16 +119,12 @@ class Game(ShowBase, CameraMaster):
     def checkGhost(self, task):
         #FIXME only for player
         for x in self.pockets:
-            for y in x.ghostNP.node().getOverlappingNodes():
-                if y == self.player.node:
-                    self.player.putInPocket(x)
-                    
+            if x.gnp.node().getNumOverlappingNodes() > 0:
+                if self.player.node in x.gnp.node().getOverlappingNodes():
+                    self.player.putInPocket(self.world, x)
+                    self.pockets.remove(x)
 
         return task.cont
-
-
-
-
 
 
 GAME = Game("Revert")
@@ -146,21 +138,8 @@ GAME.initPlayer(Point3(0, 0, 10))
 GAME.initListeners()
 
 
-GAME.taskMgr.doMethodLater(0.1, GAME.update, "physics")
+GAME.taskMgr.doMethodLater(1, GAME.update, "physics")
 
-GAME.taskMgr.add(GAME.checkGhost, "checkGhost")
+GAME.taskMgr.doMethodLater(1,GAME.checkGhost, "checkGhost")
 
 GAME.run()
-
-
-"""
-World.initWorldGraphics()
-
-
-
-Game.GAME.taskMgr.doMethodLater(0.1, World.WORLD.step, "physics")
-
-
-Game.GAME.cameraStalkee = World.WORLD.player
-Game.GAME.run()
-"""

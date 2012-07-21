@@ -12,6 +12,7 @@ class LevelBuilder(object):
     def __init__(self, game):
 
         self.game = game
+        self.worldNP = [game.worldNP, game.world]
 
         #default background color is the bland gray
         self.bg = VBase3(0.5,0.5,0.5)
@@ -30,15 +31,15 @@ class LevelBuilder(object):
             self.bg = VBase3(float(attrs['r']), float(attrs['g']), float(attrs['b']))
             return
         elif name == "ball":
-            thing = Ball(loc = pointFromAttrs(attrs), revert = rev)
+            thing = Ball(self.worldNP, loc = pointFromAttrs(attrs), revert = rev)
         elif name == "block":
-            thing = Block(loc = pointFromAttrs(attrs), revert = rev)
+            thing = Block(self.worldNP, loc = pointFromAttrs(attrs), revert = rev)
         elif name == "platform":
-            thing = Platform(float(attrs["width"]), float(attrs["rot"]), loc = pointFromAttrs(attrs))
+            thing = Platform(self.worldNP, float(attrs["width"]), float(attrs["rot"]), loc = pointFromAttrs(attrs))
         elif name == "wall":
-            thing = Platform(float(attrs["height"]), rot = 90, loc = pointFromAttrs(attrs))
+            thing = Platform(self.worldNP, float(attrs["height"]), rot = 90, loc = pointFromAttrs(attrs))
         elif name == "key":
-            thing = Key(loc = pointFromAttrs(attrs), revert = rev)
+            thing = Key(self.worldNP, loc = pointFromAttrs(attrs), revert = rev)
         else:
             return
 

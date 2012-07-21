@@ -7,9 +7,9 @@ class Item(Thing):
     The Item class is the base class for objects like keys, scrolls, etc... 
     """
 
-
     def __init__(self, model, loc = Point3(), revert = True):
-        super(Item, self).__init__(model, loc, revert)
+        super(Item, self).__init__(model, loc = loc, revert = revert)
+
 
         self.interval = None
 

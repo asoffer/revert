@@ -2,13 +2,14 @@ from pandac.PandaModules import Point3, TransformState
 
 from .interactable import Interactable
 
+
 class Pocketable(Interactable):
     """ 
     The Pocketable class is the base class for objects that can be picked up Pocketers
     """
 
-    def __init__(self, model, loc, revert):
-        super(Pocketable, self).__init__(model, loc = loc, revert = revert)
+    def __init__(self, worldNP, model, loc, revert):
+        super(Pocketable, self).__init__(worldNP, model, loc = loc, revert = revert)
 
         self.owner = None
 
@@ -18,11 +19,10 @@ class Pocketable(Interactable):
     def getOwner(self):
         return self.owner
 
-    def setOwner(self, p):
+    def setOwner(self, world, p):
         if self.owner == None and p != None:
             self.model.hide()
-            #FIXME and remove ghost nodes
-        elif self.owner != None and p == None:
-            self.model.show()
-            #FIXME and put ghost nodes back
-        self.owner = p
+            world.removeGhost(self.gnp.node())
+            world.removeRigidBody(self.np.node())
+
+        #FIXME what else can happen

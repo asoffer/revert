@@ -8,11 +8,11 @@ class Player(Pocketer):
         """
         the location is the bottom-left corner of the platform
         """
-        super(Player, self).__init__("player", loc = loc, revert = False)
+        super(Player, self).__init__(worldNP, "player", loc = loc, revert = False)
         
         self.node = BulletCharacterControllerNode(BulletCapsuleShape(1, 3, ZUp), 0.4, 'player')
 
-        self.nodePath = worldNP.attachNewNode(self.node)
+        self.nodePath = worldNP[0].attachNewNode(self.node)
 
         self.model.reparentTo(self.nodePath)
 
