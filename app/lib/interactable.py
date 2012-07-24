@@ -7,20 +7,30 @@ class Interactable(Thing):
     The Interactable class is the base class for anything that needs to interact with the Player, or other things on screen. Basically, anything that isn't just a pretty image.
     """
 
-    def __init__(self, worldNP, model, loc = Point3(), revert = True, mass = 0.0):
+    def __init__(self, model, loc = Point3(), revert = True, mass = 0.0):
         super(Interactable, self).__init__(model, loc = loc, revert = revert)
-        self.np = worldNP[0].attachNewNode(BulletRigidBodyNode(self.usid))
+        self.node = BulletRigidBodyNode(self.usid)
+        self.node.setMass(mass)
 
-        self.np.node().setMass(mass)
-        self.np.setPos(loc)
-        self.model.reparentTo(self.np)
-        worldNP[1].attachRigidBody(self.np.node())
+        self.initLoc = loc
 
-        self.gnp = worldNP[0].attachNewNode(BulletGhostNode("Ghost" + self.usid))
-        worldNP[1].attachGhost(self.gnp.node())
+        self.gNode = BulletGhostNode("Ghost" + self.usid)
 
         self.shapes = []
         self.ghostShapes = []
+
+        self.np = None
+        self.gnp = None
+
+    def initialize(self, w):
+        self.np = render.attachNewNode(self.node)
+        w.bw.attachRigidBody(self.node)
+
+        self.np.setPos(self.initLoc)
+        self.model.reparentTo(self.np)
+       
+        self.gnp = self.np.attachNewNode(self.gNode)
+        w.bw.attachGhost(self.gNode)
 
     def setPos(self, pos):
         self.np.setPos(pos)
@@ -36,8 +46,8 @@ class Interactable(Thing):
 
     def addShape(self, shape, loc = Point3(), rot = 0):
         self.shapes += [shape]
-        self.np.node().addShape(shape, TransformState.makePosHpr(loc, Vec3(0, 0, rot)))
+        self.node.addShape(shape, TransformState.makePosHpr(loc, Vec3(0, 0, rot)))
 
     def addGhostShape(self, shape, loc = Point3(), rot = 0):
         self.ghostShapes += [shape]
-        self.gnp.node().addShape(shape, TransformState.makePosHpr(loc + self.np.getPos(), Vec3(0,0, rot)))
+        self.gNode.addShape(shape, TransformState.makePosHpr(loc, Vec3(0,0, rot)))

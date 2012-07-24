@@ -2,8 +2,6 @@ from direct.showbase.ShowBase import ShowBase
 from pandac.PandaModules import Point3, Vec3, WindowProperties, BitMask32, Fog, VBase4, DirectionalLight, TransformState
 from direct.filter.CommonFilters import CommonFilters
 
-from panda3d.bullet import BulletWorld, BulletDebugNode
-
 
 from app.masters.cameraMaster import CameraMaster
 from app.lib.levelBuilder import LevelBuilder
@@ -13,9 +11,6 @@ from app.lib.pocketer import Pocketer
 from app.lib.thing import Thing
 from app.objects.hud import HUD
 from app.objects.player import Player
-
-#singleton design paradigm
-GAME = None
 
 class Game(ShowBase, CameraMaster):
     def __init__(self, title):
@@ -27,34 +22,15 @@ class Game(ShowBase, CameraMaster):
         props = WindowProperties()
         props.setTitle(title)
         self.win.requestProperties(props)
-
         self.setFrameRateMeter(True)
 
-        self.fog = Fog("world fog")
-        self.fogNP = render.attachNewNode(self.fog)
-
-        self.worldNP = self.fogNP.attachNewNode('World')
-        self.debugNP = self.worldNP.attachNewNode(BulletDebugNode('Debug'))
-        self.debugNP.show()
-
- 
-        self.world = BulletWorld()
-        self.world.setGravity(Vec3(0, 0, -9.81))
-        self.world.setDebugNode(self.debugNP.node())
-        self.debugNP.node().showWireframe(True)
-        self.debugNP.node().showConstraints(True)
-        self.debugNP.node().showBoundingBoxes(False)
-        self.debugNP.node().showNormals(False)
+        self.objs = []
         self.pockets = []
-        self.physicals = []
-
-
-    def build(self, lvlString):
-        LevelBuilder(self).build(lvlString)
 
     def add(self, thing, loc = Point3()):
         if isinstance(thing, Interactable):
-            self.physicals += [thing]
+            thing.initialize(WORLD)
+            self.objs += [thing]
 
             #FIXME maybe set Hpr as well for both of these?
         else:
@@ -72,10 +48,10 @@ class Game(ShowBase, CameraMaster):
             return
 
     def initLightingAndGraphics(self):
-        self.fog.setColor(self.getBackgroundColor())
-        self.fog.setLinearOnsetPoint(0,0,0)
-        self.fog.setLinearOpaquePoint(0,Thing.REVERTS_VISIBLE * 3, 0)#THING_REVERT_DISTANCE)
-        render.setFog(self.fog)
+        WORLD.fog.setColor(self.getBackgroundColor())
+        WORLD.fog.setLinearOnsetPoint(0,0,0)
+        WORLD.fog.setLinearOpaquePoint(0,Thing.REVERTS_VISIBLE * 3, 0)#THING_REVERT_DISTANCE)
+        render.setFog(WORLD.fog)
 
         #initialize a hud
         self.hud = HUD()
@@ -88,9 +64,6 @@ class Game(ShowBase, CameraMaster):
             n.setHpr(40 * i - 20, -40, 40) #FIXME tweak the lighting, maybe
             render.setLight(n)
 
-    def initPlayer(self, loc):
-        self.player = Player([self.worldNP, self.world], self.world, loc)
-        self.taskMgr.add(self.player.move, "movePlayer")
  
 
     def initListeners(self):
@@ -104,37 +77,46 @@ class Game(ShowBase, CameraMaster):
 
 
     def update(self, task):
-        self.world.doPhysics(self.dt, 5, 1.0/180.0)
+        WORLD.bw.doPhysics(self.dt, 5, 1.0/180.0)
 
         #constraints
-        for thing in self.physicals:
+        for thing in self.objs:
             thing.np.setY(0)
             thing.np.setH(0)
             thing.np.setP(0)
 
-        self.player.nodePath.setY(0)
+        self.player.np.setR(0)
 
         return task.cont
 
     def checkGhost(self, task):
         #FIXME only for player
         for x in self.pockets:
-            if x.gnp.node().getNumOverlappingNodes() > 0:
-                if self.player.node in x.gnp.node().getOverlappingNodes():
-                    self.player.putInPocket(self.world, x)
+            if x.gNode.getNumOverlappingNodes() > 0:
+                if self.player.node in x.gNode.getOverlappingNodes():
+                    self.player.putInPocket(WORLD, x)
                     self.pockets.remove(x)
 
         return task.cont
 
 
 GAME = Game("Revert")
-GAME.build("test")
+
+#NOTE import must be done down here because World references the singleton 'render'
+from app.world import *
+
+LVLB = LevelBuilder(GAME)
+
+LVLB.build("test")
+
+GAME.player = Player(WORLD, loc = GAME.playerInitLoc)
+GAME.add(GAME.player)
 
 GAME.initLightingAndGraphics()
 GAME.initFilters()
 
 
-GAME.initPlayer(Point3(0, 0, 10))
+GAME.taskMgr.add(GAME.player.move, "movePlayer")
 GAME.initListeners()
 
 

@@ -7,8 +7,8 @@ class Physical(Interactable):
     The Physical class is the base class for anything that responds to physics
     """
 
-    def __init__(self, worldNP, model, loc = Point3(), revert = True, rot = True):
-        super(Physical, self).__init__(worldNP, model, mass = 1.0, loc = loc, revert = revert)
+    def __init__(self, model, loc = Point3(), revert = True, rot = True):
+        super(Physical, self).__init__(model, mass = 1.0, loc = loc, revert = revert)
 
         if rot:
             self.toRevert['angVel'] = self.setAngVel
@@ -17,7 +17,7 @@ class Physical(Interactable):
         self.toRevert['vel'] = self.setVel
         self.toSave['vel'] = self.getVel
 
-        self.np.node().setMass(1) #FIXME lame default mass
+        self.node.setMass(1) #FIXME lame default mass
 
     def setVel(self, vel):
         self.np.node().setLinearVelocity(vel)

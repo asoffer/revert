@@ -6,13 +6,10 @@ from ..objects.block import Block
 from ..objects.platform import Platform
 from ..objects.key import Key
 
-from panda3d.bullet import BulletPlaneShape, BulletRigidBodyNode
 
 class LevelBuilder(object):
     def __init__(self, game):
-
         self.game = game
-        self.worldNP = [game.worldNP, game.world]
 
         #default background color is the bland gray
         self.bg = VBase3(0.5,0.5,0.5)
@@ -31,15 +28,18 @@ class LevelBuilder(object):
             self.bg = VBase3(float(attrs['r']), float(attrs['g']), float(attrs['b']))
             return
         elif name == "ball":
-            thing = Ball(self.worldNP, loc = pointFromAttrs(attrs), revert = rev)
+            thing = Ball(loc = pointFromAttrs(attrs), revert = rev)
         elif name == "block":
-            thing = Block(self.worldNP, loc = pointFromAttrs(attrs), revert = rev)
+            thing = Block(loc = pointFromAttrs(attrs), revert = rev)
         elif name == "platform":
-            thing = Platform(self.worldNP, float(attrs["width"]), float(attrs["rot"]), loc = pointFromAttrs(attrs))
+            thing = Platform(float(attrs["width"]), float(attrs["rot"]), loc = pointFromAttrs(attrs))
         elif name == "wall":
-            thing = Platform(self.worldNP, float(attrs["height"]), rot = 90, loc = pointFromAttrs(attrs))
+            thing = Platform(float(attrs["height"]), rot = 90, loc = pointFromAttrs(attrs))
         elif name == "key":
-            thing = Key(self.worldNP, loc = pointFromAttrs(attrs), revert = rev)
+            thing = Key(loc = pointFromAttrs(attrs), revert = rev)
+        elif name == "player":
+            self.game.playerInitLoc = pointFromAttrs(attrs)
+            return
         else:
             return
 
@@ -57,17 +57,6 @@ class LevelBuilder(object):
         self.parser.ParseFile(xmlFile)
         xmlFile.close()
 
-
-        
-        
-        plane = BulletPlaneShape(Vec3(0,0,1), 0)
-        planeNP = self.game.worldNP.attachNewNode(BulletRigidBodyNode('Ground'))
-        self.game.world.attachRigidBody(planeNP.node())
-        planeNP.node().addShape(plane)
-        print planeNP.getPos()
-        planeNP.setCollideMask(BitMask32.allOn())
-
-        
         self.game.setBackgroundColor(self.bg)
 
 def pointFromAttrs(attrs):
